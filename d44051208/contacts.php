@@ -14,17 +14,13 @@ if (isset($_GET["Pages"])) $pages = $_GET["Pages"];
 else                       $pages = 1;
 require_once("mycontacts_open.inc");
 // 設定SQL查詢字串
-
-$sql = "SELECT * FROM contact ORDER BY name";
+if ( isset($_SESSION["SQL"]))
+  $sql = $_SESSION["SQL"];
 // 執行SQL查詢
 $result = mysqli_query($link, $sql);
 $total_fields=mysqli_num_fields($result); // 取得欄位數
 $total_records=mysqli_num_rows($result);  // 取得記錄數
-// 計算總頁數
 $total_pages = ceil($total_records/$records_per_page);
-// 計算這一頁第1筆記錄的位置
-$offset = ($pages - 1)*$records_per_page;
-mysqli_data_seek($result, $offset); // 移到此記錄
 echo "記錄總數: $total_records 筆<br/>";
 echo "<table border=1><tr><td>編號</td>";
 echo "<td>姓名</td><td>電話</td><td>功能</td></tr>";
@@ -44,16 +40,16 @@ while ($rows = mysqli_fetch_array($result, MYSQLI_NUM)
 }
 echo "</table><br>";
 if ( $pages > 1 )  // 顯示上一頁
-   echo "<a href='index.php?Pages=".($pages-1).
+   echo "<a href='contacts.php?Pages=".($pages-1).
         "'>上一頁</a>| ";
 for ( $i = 1; $i <= $total_pages; $i++ )
    if ($i != $pages)
-     echo "<a href=\"index.php?Pages=".$i."\">".
+     echo "<a href=\"contacts.php?Pages=".$i."\">".
           $i."</a> ";
    else
      echo $i." ";
 if ( $pages < $total_pages )  // 顯示下一頁
-   echo "|<a href='index.php?Pages=".($pages+1).
+   echo "|<a href='contacts.php?Pages=".($pages+1).
         "'>下一頁</a> ";
 mysqli_free_result($result);  // 釋放佔用的記憶體
 require_once("mycontacts_close.inc");
